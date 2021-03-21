@@ -10,12 +10,11 @@
  *
  * @link              https://stevefisher.org.uk/
  * @since             1.0.0
- * @package           Members_Signup
  *
  * @wordpress-plugin
  * Plugin Name:       Members Signup
  * Plugin URI:        https://github.com/fisherab/members-signup
- * Description:       This is a short description of what the plugin does. It's displayed in the WordPress admin area.
+ * Description:       This is a to allow creation of signup forms and their completion by logged in users.
  * Version:           1.0.0
  * Author:            Steve Fisher
  * Author URI:        https://stevefisher.org.uk/
