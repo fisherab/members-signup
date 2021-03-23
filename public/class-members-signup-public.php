@@ -26,6 +26,7 @@ class Members_Signup_Public {
     private function register_short_codes() {
         add_shortcode('ms-subscribe', [$this, 'subscribe']);
         add_shortcode('ms-list-people', [$this, 'list_people']);
+        add_shortcode('ms-list-opportunities', [$this, 'list_opportunities']);
     }
 
     public function subscribe($atts, $content = null) {
@@ -77,7 +78,14 @@ class Members_Signup_Public {
             $html .= '</div>';
             $n++;
         }
-        if ($fieldvalues) {
+
+        if ($tman) {
+            $html .= '<input type="submit" value="Subscribe" name="send_registration" class="submit"/>';
+            $html .= ' or ';
+            $html .= '<input type="submit" value="Update" name="send_registration" class="submit"/>';
+            $html .= ' or ';
+            $html .= '<input type="submit" value="Unsubscribe" name="send_registration" class="submit"/>';
+        } else if ($fieldvalues) {
             $html .= '<input type="submit" value="Update" name="send_registration" class="submit"/>';
             $html .= ' or ';
             $html .= '<input type="submit" value="Unsubscribe" name="send_registration" class="submit"/>';
@@ -118,7 +126,7 @@ class Members_Signup_Public {
     public function list_people($atts, $content = null) {
         $me = wp_get_current_user();
         if ($me->ID === 0) return 'Sorry you must be logged in to see who has subscribed.';
- 
+
         if (array_key_exists('id', $atts)) {
             $opportunity_id = $atts['id'];
             if (get_post_status($opportunity_id) == false) {
@@ -148,7 +156,7 @@ class Members_Signup_Public {
                     if ($field[1] == "Text") {
                         $html .= '<td>' . $values[$field[0]] . '</td>';
                     } else if ($field[1] == "Checkbox") {
-                       $html .= '<td>' . (isset($values[$field[0]]) ? '&check;' : '&cross;') . '</td>';  
+                        $html .= '<td>' . (isset($values[$field[0]]) ? '&check;' : '&cross;') . '</td>';  
                     }
                 }
                 $html .= '</tr>';
@@ -157,4 +165,31 @@ class Members_Signup_Public {
         $html .= '</table>';
         return $html;
     }
+
+    public function list_opportunities($atts, $content = null) {
+        $me = wp_get_current_user();
+        if ($me->ID === 0) {
+            return 'Sorry you must be logged in to see what you have subscribed for.';
+        }
+        $opportunity_ids = get_posts(['fields' => 'ids', 'post_type' => 'ms_opportunity', 'posts_per_page' => -1]);
+        $html = "";
+        foreach ($opportunity_ids as $opportunity_id) {
+            $html .= '<h2>' . get_the_title($opportunity_id) . '</h2>';
+            $html .= '<ul>';
+            $fields = get_post_meta($opportunity_id, 'fields', true);
+
+            $fieldvalues = get_post_meta($opportunity_id, 'fields_for_' . $me->ID, true);
+            foreach ($fields as $field) {
+                if ($field[1] == "Text") {
+                    $html .= '<li>' . $field[0] . ': ' . $fieldvalues[$field[0]] . '</li>';
+                } else if ($field[1] == "Checkbox") {
+                    $html .= '<li>' . $field[0] . ': ' . (isset($fieldvalues[$field[0]]) ? '&check;' : '&cross;') . '</li>';
+                }
+            }
+            $html .= '</ul>';
+        }
+
+        return $html;
+    }
+
 }
