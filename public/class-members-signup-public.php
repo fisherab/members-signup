@@ -178,7 +178,7 @@ class Members_Signup_Public {
         $html = "";
         foreach ($opportunity_ids as $opportunity_id) {
             if (get_post_meta($opportunity_id, 'fields_for_' . $me->ID)) {
-                $html .= '<h2>' . get_the_title($opportunity_id) . '</h2>';
+                $html .= '<h4>' . get_the_title($opportunity_id) . '</h4>';
                 $html .= '<ul>';
                 $fields = get_post_meta($opportunity_id, 'fields', true);
 
