@@ -89,6 +89,9 @@ class Members_Signup_Public {
             $html .= '<input type="submit" value="Update" name="send_registration" class="submit"/>';
             $html .= ' or ';
             $html .= '<input type="submit" value="Unsubscribe" name="send_registration" class="submit"/>';
+        } else if (get_post_meta($opportunity_id, 'fields_for_' . $me->ID)) {
+            // Subscribed but no attributes set
+            $html .= '<input type="submit" value="Unsubscribe" name="send_registration" class="submit"/>';
         } else {
             $html .= '<input type="submit" value="Subscribe" name="send_registration" class="submit"/>';
         }
@@ -174,21 +177,22 @@ class Members_Signup_Public {
         $opportunity_ids = get_posts(['fields' => 'ids', 'post_type' => 'ms_opportunity', 'posts_per_page' => -1]);
         $html = "";
         foreach ($opportunity_ids as $opportunity_id) {
-            $html .= '<h2>' . get_the_title($opportunity_id) . '</h2>';
-            $html .= '<ul>';
-            $fields = get_post_meta($opportunity_id, 'fields', true);
+            if (get_post_meta($opportunity_id, 'fields_for_' . $me->ID)) {
+                $html .= '<h2>' . get_the_title($opportunity_id) . '</h2>';
+                $html .= '<ul>';
+                $fields = get_post_meta($opportunity_id, 'fields', true);
 
-            $fieldvalues = get_post_meta($opportunity_id, 'fields_for_' . $me->ID, true);
-            foreach ($fields as $field) {
-                if ($field[1] == "Text") {
-                    $html .= '<li>' . $field[0] . ': ' . $fieldvalues[$field[0]] . '</li>';
-                } else if ($field[1] == "Checkbox") {
-                    $html .= '<li>' . $field[0] . ': ' . (isset($fieldvalues[$field[0]]) ? '&check;' : '&cross;') . '</li>';
+                $fieldvalues = get_post_meta($opportunity_id, 'fields_for_' . $me->ID, true);
+                foreach ($fields as $field) {
+                    if ($field[1] == "Text") {
+                        $html .= '<li>' . $field[0] . ': ' . $fieldvalues[$field[0]] . '</li>';
+                    } else if ($field[1] == "Checkbox") {
+                        $html .= '<li>' . $field[0] . ': ' . (isset($fieldvalues[$field[0]]) ? '&check;' : '&cross;') . '</li>';
+                    }
                 }
+                $html .= '</ul>';
             }
-            $html .= '</ul>';
         }
-
         return $html;
     }
 
