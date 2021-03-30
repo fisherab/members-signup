@@ -51,10 +51,10 @@ class Members_Signup_Public {
         if ($tman) {
             $html .= '<label for="as"><br/>As manager, for whom are you acting?</label>'; 
             $html .= '<select id="as" name="as_id">';
+            $html .= '<option value="0"></option>';
             foreach (get_users('orderby=meta_value&meta_key=last_name') as $user) {
-                $selected = ($user->ID == $me->ID) ? ' selected' : '';
                 $name = $user->get('first_name') . ' ' . $user->get('last_name') . esc_html(' <') . $user->get('user_email') . esc_html('>'); 
-                $html .= '<option' . $selected . ' value="' .$user->ID. '">'. $name . '</option>';
+                $html .= '<option value="' .$user->ID. '">'. $name . '</option>';
             }
             $html .= '</select>';
         } else {
@@ -66,13 +66,13 @@ class Members_Signup_Public {
         foreach ($fields as $field) {
             $name = 'field_' . $n;
             $html .= '<div>';
-            $current = isset($fieldvalues[$field[0]]) ? $fieldvalues[$field[0]] : "";
-            if ($field[1] == "Text") {
-                $html .= '<label for="' . $name . '">' . $field[0] . '</label>';
+            $current = isset($fieldvalues[$field['name']]) ? $fieldvalues[$field['name']] : "";
+            if ($field['type'] == "Text") {
+                $html .= '<label for="' . $name . '">' . $field['name'] . '</label>';
                 $html .= '<input type="text" id="' . $name . '" name="' . $name . '" value="' . $current . '">'; 
-            } else if ($field[1] == "Checkbox") {
+            } else if ($field['type'] == "Checkbox") {
                 $checked = $current ? " checked" : "";
-                $html .= '<label for="' . $name . '">' . $field[0] . '</label>';
+                $html .= '<label for="' . $name . '">' . $field['name'] . '</label>';
                 $html .= '<input type="checkbox" value="1" id="' . $name . '" name="' . $name . '" ' . $checked . '>'; 
             }
             $html .= '</div>';
@@ -108,6 +108,9 @@ class Members_Signup_Public {
             return;
         }
         $as_id = $_POST['as_id'];
+        if ($as_id == 0) {
+            return;
+        }
         $opportunity_id = $_POST['opportunity_id'];
         if ($_POST['send_registration'] === "Unsubscribe") {
             delete_post_meta($opportunity_id, 'fields_for_' . $as_id);
@@ -119,7 +122,7 @@ class Members_Signup_Public {
         foreach ($fields as $field) {
             if (array_key_exists('field_' .$n, $_POST)) {
                 $value = $_POST['field_' .$n];
-                $fieldvalues[$field[0]] = $value;
+                $fieldvalues[$field['name']] = $value;
             }
             $n++;
         }
@@ -143,7 +146,7 @@ class Members_Signup_Public {
         $html .= '<table>';
         $html .= '<tr><th>Name</th>';
         foreach ($fields as $field) {
-            $html .= '<th>' . $field[0] . '</th>';
+            $html .= '<th>' . $field['name'] . '</th>';
         }
         $html .= '</tr>';
 
@@ -156,10 +159,10 @@ class Members_Signup_Public {
                 $values = unserialize($fieldvalue[0]); 
                 $html .= '<tr><td>' . $name . '</td>';
                 foreach ($fields as $field) {
-                    if ($field[1] == "Text") {
-                        $html .= '<td>' . $values[$field[0]] . '</td>';
-                    } else if ($field[1] == "Checkbox") {
-                        $html .= '<td>' . (isset($values[$field[0]]) ? '&check;' : '&cross;') . '</td>';  
+                    if ($field['type'] == "Text") {
+                        $html .= '<td>' . $values[$field['name']] . '</td>';
+                    } else if ($field['type'] == "Checkbox") {
+                        $html .= '<td>' . (isset($values[$field['name']]) ? '&check;' : '&cross;') . '</td>';  
                     }
                 }
                 $html .= '</tr>';
@@ -184,10 +187,10 @@ class Members_Signup_Public {
 
                 $fieldvalues = get_post_meta($opportunity_id, 'fields_for_' . $me->ID, true);
                 foreach ($fields as $field) {
-                    if ($field[1] == "Text") {
-                        $html .= '<li>' . $field[0] . ': ' . $fieldvalues[$field[0]] . '</li>';
-                    } else if ($field[1] == "Checkbox") {
-                        $html .= '<li>' . $field[0] . ': ' . (isset($fieldvalues[$field[0]]) ? '&check;' : '&cross;') . '</li>';
+                    if ($field['type'] == "Text") {
+                        $html .= '<li>' . $field['name'] . ': ' . $fieldvalues[$field['name']] . '</li>';
+                    } else if ($field['type'] == "Checkbox") {
+                        $html .= '<li>' . $field['name'] . ': ' . (isset($fieldvalues[$field['name']]) ? '&check;' : '&cross;') . '</li>';
                     }
                 }
                 $html .= '</ul>';

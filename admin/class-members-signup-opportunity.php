@@ -39,6 +39,13 @@ class Members_Signup_Opportunity {
     public function add_opportunity_boxes() {
         global $post;
 
+        add_meta_box(
+            'opportunity_id',
+            'Opportunity ID',
+            [$this,'opportunity_id_content'],
+            'ms_opportunity', 'advanced', 'default');
+
+
         $managers = get_post_meta($post->ID,'managers',true);
         $count = $managers ? count($managers) : 0;
         for ($x = 0; $x < $count+1; $x++) {
@@ -75,6 +82,14 @@ class Members_Signup_Opportunity {
         }
     }
 
+    /** 
+     * Invoked by add_opportunity to display opportunity id
+     */
+    public function opportunity_id_content($post) {
+        echo '<legend>Reference with shortcodes of [ms-subscribe id=' . $post->ID . '], [ms-list-people id=' . $post->ID . '] and [ms-list-opportunities]</legend>';
+    }
+
+
     /**
      * Invoked by add_opportunity_boxes to display boxes to input manager names for a specific opportunity.
      */
@@ -103,7 +118,7 @@ class Members_Signup_Opportunity {
         $unique_name = 'field_name_' . $x;
         $fields = get_post_meta($post->ID,'fields',true);
         if ($fields && array_key_exists($x, $fields)) {
-            $field = $fields[$x][0];
+            $field = $fields[$x]['name'];
         } else {
             $field = "";
         }
@@ -116,8 +131,8 @@ class Members_Signup_Opportunity {
         $unique_name = 'field_type_' . $x;
         $fields = get_post_meta($post->ID,'fields',true);
         if ($fields && array_key_exists($x, $fields)) {
-            $typex = $fields[$x][1];
-      } else {
+            $typex = $fields[$x]['type'];
+        } else {
             $typex = "";
         }
         echo '<label for="' . $unique_name . '"></label>';
@@ -161,7 +176,7 @@ class Members_Signup_Opportunity {
             $key_for_type = 'field_type_'.$x;
             if (! array_key_exists($key_for_name, $_POST)) break;
             if ($_POST[$key_for_name]) {
-                $fields[] = [trim($_POST[$key_for_name]),$_POST[$key_for_type]];
+                $fields[] = ['name' => trim($_POST[$key_for_name]), 'type' => $_POST[$key_for_type]];
             }
         }
         update_post_meta( $post_id, 'managers', $managers);
