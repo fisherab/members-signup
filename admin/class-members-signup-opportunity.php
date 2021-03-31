@@ -23,12 +23,13 @@ class Members_Signup_Opportunity {
             'not_found_in_trash' => __( 'No Opportunities found in the Trash' ), 
         );
         $args = array(
-            'labels'        => $labels,
-            'description'   => 'Holds all information about a specific opportunity',
-            'public'        => true,
-            'menu_position' => 5,
-            'supports'      => ['title'],
-            'has_archive'   => true,
+            'labels'          => $labels,
+            'description'     => 'Holds all information about a specific opportunity',
+            'public'          => true,
+            'menu_position'   => 5,
+            'supports'        => ['title'],
+            'has_archive'     => true,
+            'capability_type' => 'page',
         );
         register_post_type( 'ms_opportunity', $args ); 
     }
@@ -146,20 +147,17 @@ class Members_Signup_Opportunity {
 
     public function save_opportunity($post_id) {
 
-        if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) 
+        if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE )  {
             return;
+        }
 
         if ( ! isset ($_POST['post_type']) || 'ms_opportunity' != $_POST['post_type'] ) {
             return;
         }
 
-        if ( 'post' == $_POST['post_type'] ) {
-            if ( !current_user_can( 'edit_page', $post_id ) )
-                return;
-        } else {
-            if ( !current_user_can( 'edit_post', $post_id ) )
-                return;
-        }
+        if ( !current_user_can( 'edit_page', $post_id ) ){
+            return;
+        } 
 
         $managers = [];
         for ($x = 0; ; $x++) {
