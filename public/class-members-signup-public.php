@@ -159,10 +159,11 @@ class Members_Signup_Public {
                 $values = unserialize($fieldvalue[0]); 
                 $html .= '<tr><td>' . $name . '</td>';
                 foreach ($fields as $field) {
+                    $nm = $field['name'];
                     if ($field['type'] == "Text") {
-                        $html .= '<td>' . $values[$field['name']] . '</td>';
+                        $html .= '<td>' . (isset($values[$nm]) ? $values[$nm] : '') . '</td>';
                     } else if ($field['type'] == "Checkbox") {
-                        $html .= '<td>' . (isset($values[$field['name']]) ? '&check;' : '&cross;') . '</td>';  
+                        $html .= '<td>' . (isset($values[$nm]) ? '&check;' : '&cross;') . '</td>';  
                     }
                 }
                 $html .= '</tr>';
@@ -187,10 +188,11 @@ class Members_Signup_Public {
 
                 $fieldvalues = get_post_meta($opportunity_id, 'fields_for_' . $me->ID, true);
                 foreach ($fields as $field) {
+                    $nm = $field['name'];
                     if ($field['type'] == "Text") {
-                        $html .= '<li>' . $field['name'] . ': ' . $fieldvalues[$field['name']] . '</li>';
+                        $html .= '<li>' . $field['name'] . ': ' . (isset($fieldvalues[$nm]) ? $fieldvalues[$nm] : '') . '</li>';
                     } else if ($field['type'] == "Checkbox") {
-                        $html .= '<li>' . $field['name'] . ': ' . (isset($fieldvalues[$field['name']]) ? '&check;' : '&cross;') . '</li>';
+                        $html .= '<li>' . $field['name'] . ': ' . (isset($fieldvalues[$nm]) ? '&check;' : '&cross;') . '</li>';
                     }
                 }
                 $html .= '</ul>';
