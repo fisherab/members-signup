@@ -107,7 +107,7 @@ class Members_Signup_Public {
         if ( ! wp_verify_nonce( $_POST['annie_the_aesthetic_aardvark'], 'send_registration' ) ) {
             return;
         }
-        $as_id = $_POST['as_id'];
+        $as_id = intval($_POST['as_id']);
         if ($as_id == 0) {
             return;
         }
@@ -121,7 +121,7 @@ class Members_Signup_Public {
         $n = 0;
         foreach ($fields as $field) {
             if (array_key_exists('field_' .$n, $_POST)) {
-                $value = $_POST['field_' .$n];
+                $value = sanitize_text_field($_POST['field_' .$n]);
                 $fieldvalues[$field['name']] = $value;
             }
             $n++;

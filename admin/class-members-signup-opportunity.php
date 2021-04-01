@@ -163,7 +163,8 @@ class Members_Signup_Opportunity {
         for ($x = 0; ; $x++) {
             $key = 'manager_'.$x;
             if (! array_key_exists($key, $_POST)) break;
-            if ($_POST[$key] != 0) {
+            $value = intval($_POST[$key]);
+            if ($value != 0) {
                 $managers[] = $_POST[$key];
             }
         }
@@ -174,7 +175,7 @@ class Members_Signup_Opportunity {
             $key_for_type = 'field_type_'.$x;
             if (! array_key_exists($key_for_name, $_POST)) break;
             if ($_POST[$key_for_name]) {
-                $fields[] = ['name' => trim($_POST[$key_for_name]), 'type' => $_POST[$key_for_type]];
+                $fields[] = ['name' => sanitize_text_field($_POST[$key_for_name]), 'type' => sanitize_text_field($_POST[$key_for_type])];
             }
         }
         update_post_meta( $post_id, 'managers', $managers);
