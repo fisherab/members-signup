@@ -155,18 +155,20 @@ class Members_Signup_Public {
             if (preg_match('/^fields_for_(.*)$/',$key,$matches) == 1) {
                 $person_id = $matches[1];
                 $user = get_user_by ('ID', $person_id);
-                $name = $user->get('first_name') . ' ' . $user->get('last_name') . esc_html(' <') . $user->get('user_email') . esc_html('>'); 
-                $values = unserialize($fieldvalue[0]); 
-                $html .= '<tr><td>' . $name . '</td>';
-                foreach ($fields as $field) {
-                    $nm = $field['name'];
-                    if ($field['type'] == "Text") {
-                        $html .= '<td>' . (isset($values[$nm]) ? $values[$nm] : '') . '</td>';
-                    } else if ($field['type'] == "Checkbox") {
-                        $html .= '<td>' . (isset($values[$nm]) ? '&check;' : '&cross;') . '</td>';  
-                    }
-                }
-                $html .= '</tr>';
+                if ($user) {
+		    $name = $user->get('first_name') . ' ' . $user->get('last_name') . esc_html(' <') . $user->get('user_email') . esc_html('>'); 
+		    $values = unserialize($fieldvalue[0]); 
+		    $html .= '<tr><td>' . $name . '</td>';
+		    foreach ($fields as $field) {
+			$nm = $field['name'];
+			if ($field['type'] == "Text") {
+		            $html .= '<td>' . (isset($values[$nm]) ? $values[$nm] : '') . '</td>';
+			} else if ($field['type'] == "Checkbox") {
+			    $html .= '<td>' . (isset($values[$nm]) ? '&check;' : '&cross;') . '</td>';  
+			}
+		    }
+		    $html .= '</tr>';
+		}
             }
         }
         $html .= '</table>';
